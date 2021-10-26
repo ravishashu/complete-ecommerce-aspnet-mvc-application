@@ -1,7 +1,9 @@
 using ETickets.Data;
+using ETickets.Data.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -24,9 +26,11 @@ namespace ETickets
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //DeContesxt configurations
+            //DdContesxt configurations
+            services.AddDbContext<AppDbContext>(options=> options.UseSqlServer(Configuration.GetConnectionString("DefaultConnectionString")));
 
-            services.AddDbContext<AppDbContext>();
+            //Servces configuration 
+            services.AddScoped<IActorsService, ActorsService>();
             services.AddControllersWithViews();
         }
 
@@ -56,6 +60,10 @@ namespace ETickets
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            //Seed Databases
+            AppDbInitializer.Seed(app);
+
         }
     }
 }

@@ -16,12 +16,13 @@ namespace ETickets.Models
         public string Description { get; set; }
 
         public double Price { get; set; }
-        public string ImageUrl { get; set; }
+        public string ImageURL { get; set; }
         public DateTime StartDate { get; set; }
 
         public DateTime EndDate { get; set; }
         public MovieCategory MovieCategory { get; set; }
 
+        
         //Relationship
 
         public List<Actor_Movie> Actor_Movies { get; set; }
