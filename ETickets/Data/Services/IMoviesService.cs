@@ -15,5 +15,7 @@ namespace ETickets.Data.Services
         Task<NewMoivesDropdownsVM> GetNewMoivesDropdowns();
 
         Task AddNewMovieAsync(NewMovieVM data);
+
+        Task UpdateNewMovieAsync(NewMovieVM data);
     }
 }
