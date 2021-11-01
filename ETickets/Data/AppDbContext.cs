@@ -35,6 +35,11 @@ namespace ETickets.Data
 
         public DbSet<Producer> Producers { get; set; }
 
+
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
+
+        public DbSet<ShoppingCartItem> ShoppingCartItems { get; set; }
     }
 
 
