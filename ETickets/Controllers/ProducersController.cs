@@ -7,9 +7,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using ETickets.Data.Static;
 
 namespace ETickets.Controllers
 {
+    [Authorize(Roles =UserRoles.Admin)]
+   
     public class ProducersController : Controller
     {
         private readonly IProducersService _service;
@@ -18,12 +22,13 @@ namespace ETickets.Controllers
         {
             _service = service;
         }
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             var allProducers = await _service.GetAllAsync();
             return View(allProducers);
         }
-
+        [AllowAnonymous]
         public async Task<IActionResult> Details(int id)
         {
             var producerDetails = await _service.GetByIdAsync(id);

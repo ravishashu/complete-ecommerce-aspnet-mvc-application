@@ -8,9 +8,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using ETickets.Data.Static;
 
 namespace ETickets.Controllers
 {
+    [Authorize(Roles = UserRoles.Admin)]
     public class MoviesController : Controller
     {
         private readonly IMoviesService _service;
@@ -19,23 +22,28 @@ namespace ETickets.Controllers
         {
             _service = service;
         }
-
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             var allMovies = await _service.GetAllAsync(n=>n.Cinema);
             return View(allMovies);
         }
+        [AllowAnonymous]
+        
         public async Task<IActionResult> Filter(String searchString)
         {
             var allMovies = await _service.GetAllAsync(n => n.Cinema);
             if (!string.IsNullOrEmpty(searchString))
             {
-                var filteredResult = allMovies.Where(n => n.Name.Contains(searchString) || n.Description.Contains(searchString)).ToList();
-                return View("Index", filteredResult);
+                //var filteredResult = allMovies.Where(n => n.Name.ToLower().Contains(searchString.ToLower()) || 
+                //n.Description.ToLower().Contains(searchString.ToLower())).ToList();
+                var filteredResultNew = allMovies.Where(n => string.Equals(n.Name,searchString,StringComparison.InvariantCultureIgnoreCase) ||
+                string.Equals(n.Description, searchString, StringComparison.InvariantCultureIgnoreCase)).ToList();
+                return View("Index", filteredResultNew);
             }
             return View("Index", allMovies);
         }
-
+        [AllowAnonymous]
         public async Task<IActionResult> Details(int id)
         {
             var moiveDetails = await _service.GetMovieByIdAsync(id);

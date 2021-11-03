@@ -1,5 +1,7 @@
-﻿using ETickets.Models;
+﻿using ETickets.Data.Static;
+using ETickets.Models;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -318,5 +320,83 @@ namespace ETickets.Data
                 }
             }
         }
+
+        public static async Task SeedUserAndRolesAsync(IApplicationBuilder applicationBuilder)
+        {
+            using (var serviceScope= applicationBuilder.ApplicationServices.CreateScope())
+            {
+                try
+                {
+                    //Roles
+                    var roleManger = serviceScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                    if (!await roleManger.RoleExistsAsync(UserRoles.Admin))
+                        await roleManger.CreateAsync(new IdentityRole(UserRoles.Admin));
+                    if (!await roleManger.RoleExistsAsync(UserRoles.User))
+                        await roleManger.CreateAsync(new IdentityRole(UserRoles.User));
+                }
+                catch (Exception e)
+                {
+
+                    throw;
+                }
+                try
+                {
+                    //User
+                    var userManger = serviceScope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                    string adminUserEmail = "admin@etickets.com";
+                    var adminUser = await userManger.FindByEmailAsync(adminUserEmail);
+                    if (adminUser == null)
+                    {
+                        var newAdminUser = new ApplicationUser()
+                        {
+                            FullName = "Admin User",
+                            UserName = "admin",
+                            Email = adminUserEmail,
+                            EmailConfirmed = true
+                        };
+                        await userManger.CreateAsync(newAdminUser, "India@123456");
+                        await userManger.AddToRoleAsync(newAdminUser, UserRoles.Admin);
+                    }
+                }
+                catch (Exception e)
+                {
+
+                    throw;
+                }
+                try
+                {
+                    //User
+                    var userManger = serviceScope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+                    string appUserEmail = "user@etickets.com";
+                    var appUser = await userManger.FindByEmailAsync(appUserEmail);
+                    if (appUser == null)
+                    {
+                        var newAdminUser = new ApplicationUser()
+                        {
+                            FullName = "Application User",
+                            UserName = "admin",
+                            Email = appUserEmail,
+                            EmailConfirmed = true
+                        };
+                        await userManger.CreateAsync(newAdminUser, "Coding@123456");
+                        await userManger.AddToRoleAsync(newAdminUser, UserRoles.Admin);
+                    }
+                }
+                catch (Exception e)
+                {
+
+                    throw;
+                }
+               
+
+              
+
+               
+                }
+            }
+        }
+
+          
     }
-}
+

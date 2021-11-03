@@ -1,10 +1,13 @@
 using ETickets.Data;
 using ETickets.Data.Cart;
 using ETickets.Data.Services;
+using ETickets.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,7 +42,13 @@ namespace ETickets
             services.AddScoped<IOrdersService, OrdersService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped(sc => ShoppingCart.GetShoppingCart(sc));
+
+            //Authentication and authorization
+            services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>();
+            services.AddMemoryCache();
             services.AddSession();
+            services.AddAuthentication(
+                option=> option.DefaultScheme=CookieAuthenticationDefaults.AuthenticationScheme);
             services.AddControllersWithViews();
         }
 
@@ -61,6 +70,7 @@ namespace ETickets
 
             app.UseRouting();
             app.UseSession();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -72,7 +82,7 @@ namespace ETickets
 
             //Seed Databases
             AppDbInitializer.Seed(app);
-
+            AppDbInitializer.SeedUserAndRolesAsync(app).Wait();
         }
     }
 }
